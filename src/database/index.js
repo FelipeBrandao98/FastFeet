@@ -5,12 +5,16 @@ import Sequelize from 'sequelize'
 // Importação dos models
 import User from '../app/models/User'
 import Recipient from '../app/models/Recipient'
+import Deliveryman from '../app/models/Deliveryman'
+import Avatar from '../app/models/Avatar'
+import Signature from '../app/models/Signature'
+import Order from '../app/models/Order'
 
 // Configuração do banco de dados
 import dataBaseConfig from '../config/database'
 
 // Armazena os models em uma lista
-const models = [User, Recipient]
+const models = [User, Recipient, Avatar, Signature, Deliveryman, Order]
 
 // Instancia a classe do banco de dados
 class Database {
@@ -21,7 +25,12 @@ class Database {
     this.connection = new Sequelize(dataBaseConfig)
 
     // Percorre o array models e retorna cada conexão com cada tabela
-    models.map(model => model.init(this.connection))
+    models
+      .map(model => {
+        model.init(this.connection)
+        return model
+      })
+      .map(model => model.associate && model.associate(this.connection.models))
   }
 }
 
