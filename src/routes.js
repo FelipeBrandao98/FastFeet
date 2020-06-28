@@ -11,7 +11,8 @@ import RecipientController from './app/controllers/RecipientController'
 import AvatarController from './app/controllers/AvatarController'
 import SignatureController from './app/controllers/SignatureController'
 import DeliverymanController from './app/controllers/DeliverymanController'
-import OrderController from './app/controllers/OrderController'
+import DeliveryController from './app/controllers/DeliveryController'
+import DeliveriesController from './app/controllers/DeliveriesController'
 
 const Routes = new Router()
 
@@ -25,7 +26,7 @@ Routes.post('/sessions', SessionController.store)
 Routes.use(AuthMiddleware)
 
 /* 
-||   Authenticated routes
+      ||   Authenticated routes
 */
 
 // Uploads routes
@@ -42,9 +43,11 @@ Routes.get('/deliverymans', DeliverymanController.index)
 Routes.post('/deliverymans', DeliverymanController.store)
 Routes.put('/deliverymans/:id', DeliverymanController.update)
 Routes.delete('/deliverymans/:id', DeliverymanController.delete)
-// Orders routes
-Routes.get('/orders/:id', OrderController.index)
-Routes.post('/orders', OrderController.store)
-Routes.get('/orders/:delivery/:id', OrderController.update)
+// Deliveries routes
+Routes.get('/deliveries', DeliveryController.index)
+Routes.post('/deliveries', DeliveryController.store)
+Routes.put('/deliveries/:delivery/:id', DeliveryController.update)
+// Deliveries routes
+Routes.get('/:id/deliveries/:finalized', DeliveriesController.index)
 
 export default Routes

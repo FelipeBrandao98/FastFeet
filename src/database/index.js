@@ -8,13 +8,13 @@ import Recipient from '../app/models/Recipient'
 import Deliveryman from '../app/models/Deliveryman'
 import Avatar from '../app/models/Avatar'
 import Signature from '../app/models/Signature'
-import Order from '../app/models/Order'
+import Delivery from '../app/models/Delivery'
 
 // Configuração do banco de dados
 import dataBaseConfig from '../config/database'
 
 // Armazena os models em uma lista
-const models = [User, Recipient, Avatar, Signature, Deliveryman, Order]
+const models = [User, Recipient, Avatar, Signature, Deliveryman, Delivery]
 
 // Instancia a classe do banco de dados
 class Database {
