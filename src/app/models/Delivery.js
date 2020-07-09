@@ -27,6 +27,10 @@ class Delivery extends Model {
       foreignKey: 'signature_id',
       as: 'signature',
     })
+    this.belongsTo(models.Problem, {
+      foreignKey: 'problem_id',
+      as: 'problem',
+    })
   }
 }
 

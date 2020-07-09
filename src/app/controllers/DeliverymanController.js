@@ -1,18 +1,43 @@
 import Deliveryman from '../models/Deliveryman'
+import Delivery from '../models/Delivery'
 import Avatar from '../models/Avatar'
+
+import { Op } from 'sequelize'
 import * as Yup from 'yup'
 
 class DeliverymanController {
   /*
-  || Index method
+  || Show method
   */
-  async index(req, res) {
+  async show(req, res) {
     const deliverymans = await Deliveryman.findAll({
       include: [
         { model: Avatar, as: 'avatar', attributes: ['name', 'path', 'url'] },
       ],
     })
     return res.json(deliverymans)
+  }
+
+  /*
+  || Index method
+  */
+  async index(req, res) {
+    const { id } = req.params
+
+    const deliveryman = await Deliveryman.findOne({
+      where: { id },
+      attributes: ['name', 'email', 'fired'],
+      include: [
+        { model: Avatar, as: 'avatar', attributes: ['name', 'path', 'url'] },
+      ],
+    })
+
+    const deliveries = await Delivery.findAll({
+      where: { deliveryman_id: id, end_at: { [Op.ne]: null } },
+      attributes: ['id', 'product', 'start_at', 'end_at'],
+    })
+
+    return res.json({ deliveryman, deliveries })
   }
   /*
   || Store method

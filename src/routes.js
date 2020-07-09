@@ -12,7 +12,6 @@ import AvatarController from './app/controllers/AvatarController'
 import SignatureController from './app/controllers/SignatureController'
 import DeliverymanController from './app/controllers/DeliverymanController'
 import DeliveryController from './app/controllers/DeliveryController'
-import DeliveriesController from './app/controllers/DeliveriesController'
 
 const Routes = new Router()
 
@@ -39,15 +38,16 @@ Routes.post(
 // Recipients routes
 Routes.post('/recipients', RecipientController.store)
 // Deliverymans routes
-Routes.get('/deliverymans', DeliverymanController.index)
+Routes.get('/deliverymans', DeliverymanController.show)
+Routes.get('/deliverymans/:id', DeliverymanController.index)
 Routes.post('/deliverymans', DeliverymanController.store)
 Routes.put('/deliverymans/:id', DeliverymanController.update)
 Routes.delete('/deliverymans/:id', DeliverymanController.delete)
 // Deliveries routes
-Routes.get('/deliveries', DeliveryController.index)
+Routes.get('/deliveries', DeliveryController.show)
+Routes.get('/deliveries/:id', DeliveryController.index)
 Routes.post('/deliveries', DeliveryController.store)
 Routes.put('/deliveries/:delivery/:id', DeliveryController.update)
-// Deliveries routes
-Routes.get('/:id/deliveries/:finalized', DeliveriesController.index)
+Routes.delete('/deliveries/:id', DeliveryController.delete)
 
 export default Routes

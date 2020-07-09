@@ -7,6 +7,7 @@ class Deliveryman extends Model {
         name: Sequelize.STRING,
         email: Sequelize.INTEGER,
         fired: Sequelize.DATE,
+        deliveries: Sequelize.VIRTUAL,
       },
       {
         sequelize,

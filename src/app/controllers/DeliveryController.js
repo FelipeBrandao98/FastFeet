@@ -7,19 +7,65 @@ import Recipient from '../models/Recipient'
 import Deliveryman from '../models/Deliveryman'
 import Avatar from '../models/Avatar'
 import Signature from '../models/Signature'
+import Problem from '../models/Problem'
 // Libs import
 import Mail from '../../lib/Mail'
 
 class DeliveryController {
   /*
-  || Index method
+  || Show method
   */
-  async index(req, res) {
+  async show(req, res) {
     const { page = 1 } = req.query
     const deliveries = await Delivery.findAll({
       order: ['created_at'],
       limit: 5,
       offset: (page - 1) * 5,
+      attributes: ['id', 'product', 'start_at', 'end_at'],
+      include: [
+        {
+          model: Recipient,
+          as: 'recipient',
+          attributes: [
+            'destname',
+            'street',
+            'number',
+            'complement',
+            'state',
+            'city',
+            'cep',
+          ],
+        },
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['id', 'name', 'email'],
+          include: [
+            {
+              model: Avatar,
+              as: 'avatar',
+              attributes: ['id', 'path', 'url'],
+            },
+          ],
+        },
+        {
+          model: Signature,
+          as: 'signature',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    })
+
+    return res.json(deliveries)
+  }
+
+  /*
+  || Index method
+  */
+  async index(req, res) {
+    const { id } = req.params
+    const deliveries = await Delivery.findOne({
+      where: { id },
       attributes: ['id', 'product', 'start_at', 'end_at'],
       include: [
         {
@@ -211,7 +257,7 @@ class DeliveryController {
         signature_id,
       })
 
-      return res.json({ message: 'Finalized delivery' }, deliveryFinalized)
+      return res.json({ message: 'Finalized delivery', deliveryFinalized })
     }
 
     return res.status(404).json()
@@ -221,7 +267,48 @@ class DeliveryController {
   || Delete method
   */
   async delete(req, res) {
-    return res.json()
+    const schema = Yup.object().shape({
+      description: Yup.string().required(),
+    })
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(401).json({ error: 'Validation fails' })
+    }
+
+    const { id } = req.params
+    const { description } = req.body
+
+    const checkDeliveryFinalized = await Delivery.findOne({
+      where: { id, end_at: { [Op.ne]: null } },
+    })
+
+    if (checkDeliveryFinalized) {
+      return res.status(401).json({ error: 'This delivery has been ended' })
+    }
+
+    const CheckProblemDeclareted = await Delivery.findOne({
+      where: { id, problem_id: { [Op.ne]: null } },
+    })
+
+    if (CheckProblemDeclareted) {
+      return res
+        .status(401)
+        .json({ error: 'Problem has been alredy declareted' })
+    }
+
+    const delivery = await Delivery.findByPk(id)
+
+    const problemDeclareted = await Problem.create({
+      delivery_id: id,
+      description,
+    })
+
+    const deliveryCanceled = await delivery.update({
+      canceled_at: new Date(),
+      problem_id: problemDeclareted.id,
+    })
+
+    return res.json(deliveryCanceled)
   }
 }
 
